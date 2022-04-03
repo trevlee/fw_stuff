@@ -5,7 +5,7 @@
 # set default policy to drop
 iptables -P INPUT DROP
 iptables -P OUTPUT DROP
-iptables -P FORWARD ACCEPT
+iptables -P FORWARD DROP
 
 # flush old rules across the various tables
 iptables -F
