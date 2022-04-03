@@ -2,10 +2,10 @@
 
 # ref: https://www.bytefish.de/blog/iptables.html + GOOGLE
 
-# set default policies to drop
+# set default policy to drop
 iptables -P INPUT DROP
-iptables -P OUTPUT ACCEPT
-iptables -P FORWARD ACCEPT
+iptables -P OUTPUT DROP
+iptables -P FORWARD DROP
 
 # flush old rules across the various tables
 iptables -F
@@ -31,6 +31,18 @@ iptables -A FORWARD -m state --state INVALID -j DROP
 iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 
+# output chain
+iptables -A OUTPUT -p tcp --dport 22 -j ACCEPT
+iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT
+iptables -A OUTPUT -p udp ---dport 53 -j ACCEPT
+iptables -A OUTPUT -p udp --dport 67:68 -j ACCEPT
+iptables -A OUTPUT -p tcp --dport 80 -j ACCEPT
+iptables -A OUTPUT -p tcp --dport 443 -j ACCEPT
+
 # allow incoming icmp packets
 iptables -A INPUT -p icmp --icmp-type 8 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
 iptables -A OUTPUT -p icmp --icmp-type 0 -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# allow outgoing icmp packets
+iptables -A OUTPUT -p icmp --icmp-type 8 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -p icmp --icmp-type 0 -m state --state ESTABLISHED,RELATED -j ACCEPT
