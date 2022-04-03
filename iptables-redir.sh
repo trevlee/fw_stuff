@@ -18,7 +18,7 @@ iptables -t mangle -F
 iptables -t mangle -X
 iptables -t mangle -Z
 
-# allow all loopback traffic (make comment)
+# allow all loopback traffic
 iptables -A INPUT -i lo -j ACCEPT
 iptables -A OUTPUT -o lo -j ACCEPT
 
@@ -32,17 +32,15 @@ iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 
 # input chain
-iptables -A INPUT -p tcp -m tcp -s <IP> --dport 22 -m comment --comment "SSH" -j ACCEPT
-iptables -A INPUT -p tcp -m tcp --dport 80 -m comment --comment "HTTP" -j ACCEPT
-iptables -A INPUT -p tcp -m tcp --dport 443 -m comment --comment "HTTPS" -j ACCEPT
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 
 # output chain
-iptables -A OUTPUT -p tcp -m tcp --dport 22 -m comment --comment "SSH" -j ACCEPT
-iptables -A OUTPUT -p tcp -m tcp --dport 53 -m comment --comment "DNS-TCP" -j ACCEPT
-iptables -A OUTPUT -p udp -m udp --dport 53 -m comment --comment "DNS-UDP" -j ACCEPT
-iptables -A OUTPUT -p udp -m udp --dport 67:68 -m comment --comment "DHCP" -j ACCEPT
-iptables -A OUTPUT -p tcp -m tcp --dport 80 -m comment --comment "HTTP" -j ACCEPT
-iptables -A OUTPUT -p tcp -m tcp --dport 443 -m comment --comment "HTTPS" -j ACCEPT
+iptables -A OUTPUT -p tcp --dport 22 -j ACCEPT
+iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT
+iptables -A OUTPUT -p udp ---dport 53 -j ACCEPT
+iptables -A OUTPUT -p udp --dport 67:68 -j ACCEPT
+iptables -A OUTPUT -p tcp --dport 80 -j ACCEPT
+iptables -A OUTPUT -p tcp --dport 443 -j ACCEPT
 
 # allow incoming icmp packets
 iptables -A INPUT -p icmp --icmp-type 8 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
@@ -51,15 +49,6 @@ iptables -A OUTPUT -p icmp --icmp-type 0 -m state --state ESTABLISHED,RELATED -j
 # allow outgoing icmp packets
 iptables -A OUTPUT -p icmp --icmp-type 8 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
 iptables -A INPUT -p icmp --icmp-type 0 -m state --state ESTABLISHED,RELATED -j ACCEPT
-
-# DNAT redir
-iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to-destination <IP>:443
-iptables -t nat -A POSTROUTING -j MASQUERADE # mod for access
-
-# explicit drop/accept
-iptables -A INPUT -j DROP
-iptables -A OUTPUT -j DROP
-iptables -A FORWARD -j ACCEPT
 
 # forward packets
 sysctl net.ipv4.ip_forward=1
