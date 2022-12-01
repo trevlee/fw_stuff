@@ -32,11 +32,11 @@ $ipt -A OUTPUT -o lo -j ACCEPT
 
 # drop invalid packets
 $ipt -A INPUT -m state --state INVALID -j DROP
+$ipt -A INPUT -m conntrack --ctstate INVALID -j DROP
 $ipt -A OUTPUT -m state --state INVALID -j DROP
+$ipt -A OUTPUT -m conntrack --ctstate INVALID -j DROP
 $ipt -A FORWARD -m state --state INVALID -j DROP
-$ipt -A INPUT -m state --state INVALID -j DROP
-$ipt -A OUTPUT -m state --state INVALID -j DROP
-$ipt -A FORWARD -m state --state INVALID -j DROP
+$ipt -A FORWARD -m conntrack --ctstate INVALID -j DROP
 
 # input chain
 $ipt -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
